@@ -38,7 +38,7 @@ jobs:
           node-version: '18.x'
       
       - name: Install Dependencies
-        run: cd frontend && npm ci
-      
+        run: cd portfolio-front && npm ci
+
       - name: Build Frontend
-        run: cd frontend && npm run build
+        run: cd portfolio-front && npm run build
