@@ -1,0 +1,44 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '10.0.x'
+      
+      - name: Build .NET API
+        run: |
+          cd PortfolioApi
+          dotnet restore
+          dotnet build --configuration Release
+      
+      - name: Build Docker Image
+        run: docker build -f PortfolioApi/Dockerfile -t portfolio-backend .
+  
+  build-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+      
+      - name: Install Dependencies
+        run: cd frontend && npm ci
+      
+      - name: Build Frontend
+        run: cd frontend && npm run build
