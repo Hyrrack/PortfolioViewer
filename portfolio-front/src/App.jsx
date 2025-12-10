@@ -1,14 +1,15 @@
 import { useState } from 'react'
-import { Sidebar } from './components/sidebar.jsx'
+import { SidebarProvider } from "@/components/ui/sidebar"
 import './App.css'
 import { LineChart, Area } from 'recharts'
+import DashboardPage from './dashboard.jsx'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-      <Sidebar />
+      <SidebarProvider>
+        <DashboardPage />
+      </SidebarProvider>
     </>
   )
 }
