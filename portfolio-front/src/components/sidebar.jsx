@@ -1,3 +1,6 @@
+
+import { Card, CardBody, Stat, StatLabel, StatNumber, Badge } from '@chakra-ui/react'
+
 export const Sidebar = () => {
     const stocks = [
         { symbol: "AAPL", price: 189.25 },
