@@ -16,4 +16,6 @@ public class FinanceController(IFinanceService financeService) : ControllerBase
         return stock;
     }
 
+    
+
 }
