@@ -15,4 +15,5 @@ public class FinanceController(IFinanceService financeService) : ControllerBase
         var stock = await _financeService.GetFromYahoo(symbol);
         return stock;
     }
+
 }
