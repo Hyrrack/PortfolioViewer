@@ -1,5 +1,14 @@
-
-import { Card, CardBody, Stat, StatLabel, StatNumber, Badge } from '@chakra-ui/react'
+import { GalleryVerticalEnd } from "lucide-react"
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    SidebarRail,
+} from "@/components/ui/sidebar"
 
 export const Sidebar = () => {
     const stocks = [
@@ -8,13 +17,11 @@ export const Sidebar = () => {
     ];
 
     return (
-        <>
-            <ul>
-                {stocks.map(s => (
-                    <li key={s.symbol}>{s.symbol} price: {s.price}</li>
-                ))}
-            </ul>
+        <Sidebar>
+            {stocks.map(s => (
+                <div key={s.symbol}>{s.symbol} price: {s.price}</div>
+            ))}
             <button>+</button>
-        </>
+        </Sidebar>
     )
 }
