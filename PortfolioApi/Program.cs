@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using PortfolioApi.Data;
 using PortfolioApi.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,27 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<UserStockContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
+
+// JWT Bearer 
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = Environment.GetEnvironmentVariable("FRONTEND_API_URL");
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = Environment.GetEnvironmentVariable("FRONTEND_API_URL"),
+
+            ValidateAudience = false,
+
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddHttpClient();
 
@@ -31,6 +54,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
 

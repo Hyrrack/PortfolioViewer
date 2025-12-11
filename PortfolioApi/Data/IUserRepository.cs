@@ -4,6 +4,6 @@ namespace PortfolioApi.Data;
 
 public interface IUserRepository
 {
-    Task<CreateUserDto> GetOrCreateUserAsync(string name, int id);
+    Task<CreateUserDto> GetOrCreateUserAsync(string name, string id);
     Task<User> GetUserWithStocksAsync(int userId);
 }

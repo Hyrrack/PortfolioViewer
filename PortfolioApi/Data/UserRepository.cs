@@ -8,7 +8,7 @@ namespace PortfolioApi.Data;
 public class UserRepository(UserStockContext context) : IUserRepository
 {
     private readonly UserStockContext _context = context;
-    public async Task<CreateUserDto> GetOrCreateUserAsync(string name, int id)
+    public async Task<CreateUserDto> GetOrCreateUserAsync(string name, string id)
     {
         var userExist = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (userExist != null) return new CreateUserDto
