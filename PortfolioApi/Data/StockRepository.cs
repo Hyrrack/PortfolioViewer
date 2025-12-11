@@ -5,9 +5,10 @@ namespace PortfolioApi.Data;
 public class StockRepository(UserStockContext context) : IStockRepository
 {
     private readonly UserStockContext _context = context;
-    public Task AddStockAsync(Stock newStock)
+    public async Task AddStockAsync(Stock newStock)
     {
-        throw new NotImplementedException();
+        await _context.AddAsync(newStock);
+        await _context.SaveChangesAsync();
     }
 
     public Task<List<Stock>> GetUserStocksAsync(int userId)
