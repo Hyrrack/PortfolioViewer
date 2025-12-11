@@ -17,6 +17,9 @@ builder.Services.AddDbContext<UserStockContext>(options =>
 
 builder.Services.AddHttpClient();
 
+builder.Services.AddScoped<IStockRepository, StockRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 builder.Services.AddScoped<IYahooFinance, YahooFinance>();
 builder.Services.AddScoped<IFinanceService, FinanceService>();
 

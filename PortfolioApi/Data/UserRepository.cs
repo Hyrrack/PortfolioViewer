@@ -1,15 +1,21 @@
 using Microsoft.EntityFrameworkCore;
 using PortfolioApi.Data;
+using PortfolioApi.DTOs;
 using PortfolioApi.Models;
 
+namespace PortfolioApi.Data;
 
 public class UserRepository(UserStockContext context) : IUserRepository
 {
     private readonly UserStockContext _context = context;
-    public async Task<User> GetOrCreateUserAsync(string name, int id)
+    public async Task<CreateUserDto> GetOrCreateUserAsync(string name, int id)
     {
         var userExist = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
-        if (userExist != null) return userExist;
+        if (userExist != null) return new CreateUserDto
+        {
+            Created = false,
+            User = userExist
+        };
         var newUser = new User
         {
             Id = id,
@@ -17,7 +23,11 @@ public class UserRepository(UserStockContext context) : IUserRepository
         };
         _context.Users.Add(newUser);
         await _context.SaveChangesAsync();
-        return newUser;
+        return new CreateUserDto
+        {
+            Created = true,
+            User = newUser
+        };
     }
 
     public async Task<User> GetUserWithStocksAsync(int userId)

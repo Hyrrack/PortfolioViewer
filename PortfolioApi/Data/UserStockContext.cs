@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PortfolioApi.Models;
 namespace PortfolioApi.Data;
 
 public class UserStockContext(DbContextOptions<UserStockContext> opts) : DbContext(opts)

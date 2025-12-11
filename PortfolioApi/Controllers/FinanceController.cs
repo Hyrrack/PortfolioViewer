@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PortfolioApi.Data;
+using PortfolioApi.DTOs;
 using PortfolioApi.Services;
 
 namespace PortfolioApi.Controllers;
@@ -18,7 +19,7 @@ public class FinanceController(IFinanceService financeService, IUserRepository u
         return stock;
     }
 
-    [HttpPost]
+    [HttpPut]
     public async Task<ActionResult> AddStock(string symbol)
     {
         return Ok();
@@ -27,7 +28,9 @@ public class FinanceController(IFinanceService financeService, IUserRepository u
     [HttpPost]
     public async Task<ActionResult> CreateUser()
     {
-        await _userRepository.GetOrCreateUserAsync("Felix", 1);
+        CreateUserDto user = await _userRepository.GetOrCreateUserAsync("Felix", 1);
+        if (user.Created) return Ok();
+        else return Ok();
     }
 
 
