@@ -4,7 +4,9 @@ namespace PortfolioApi.Models;
 public class User
 {
     [Key]
-    public string Id { get; set; } = string.Empty;
+    public int Id { get; set; }
+    [Required]
+    public string UserId { get; set; }
     [Required]
     public string Name { get; set; } = string.Empty;
 

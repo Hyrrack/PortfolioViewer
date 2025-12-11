@@ -19,14 +19,40 @@ public class UsersController(IUserRepository userRepository) : ControllerBase
     public async Task<ActionResult> CreateUser()
     {
         var clerkId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var userName = User.FindFirst("name")?.Value;
-        if (clerkId == null || userName == null)
+        var fullName = User.FindFirst("fullname")?.Value;
+        var userName = User.FindFirst("username")?.Value;
+
+        System.Console.WriteLine($"DEBUG: clerkId={clerkId}");
+        System.Console.WriteLine($"DEBUG: fullName={fullName}");
+        System.Console.WriteLine($"DEBUG: userName={userName}");
+        System.Console.WriteLine($"DEBUG: All claims:");
+
+        var effectiveName = fullName ?? userName ?? "User";
+
+        // Denna if-sats gör INGET - ta bort den!
+        if (clerkId == null || effectiveName == null)
         {
             return Unauthorized("User ID or Name claim not found.");
         }
 
-        CreateUserDto response = await _userRepository.GetOrCreateUserAsync(userName, clerkId);
+        CreateUserDto response = await _userRepository.GetOrCreateUserAsync(effectiveName, clerkId);
+
+        // Det här är onödigt - båda returnerar Ok()
         if (response.Created) return Ok();
         else return Ok();
+    }
+
+    [HttpGet]
+    [Authorize]
+    public IActionResult SimpleTest()
+    {
+        Console.WriteLine("✅ SIMPLE TEST - WE MADE IT INTO THE METHOD!");
+
+        return Ok(new
+        {
+            Message = "Authorized!",
+            UserId = User.FindFirst("sub")?.Value,
+            Name = User.FindFirst("fullname")?.Value
+        });
     }
 }

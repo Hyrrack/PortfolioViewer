@@ -6,6 +6,15 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var clerkIssuerUrl = builder.Configuration["Clerk:IssuerUrl"];
+
+Console.WriteLine($"DEBUG: Loaded Issuer URL: {clerkIssuerUrl}");
+
+if (string.IsNullOrEmpty(clerkIssuerUrl))
+{
+    throw new InvalidOperationException("Clerk:IssuerUrl configuration value is missing.");
+}
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -22,18 +31,33 @@ builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.Authority = Environment.GetEnvironmentVariable("FRONTEND_API_URL");
-
+        options.Authority = builder.Configuration["Clerk:IssuerUrl"];
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = Environment.GetEnvironmentVariable("FRONTEND_API_URL"),
-
+            ValidIssuer = builder.Configuration["Clerk:IssuerUrl"],
             ValidateAudience = false,
-
             ValidateLifetime = true,
-            ValidateIssuerSigningKey = true
+            ValidateIssuerSigningKey = true,
+
+            // ⭐ LÄGG TILL DESSA TVÅ RADER ⭐
+            NameClaimType = "sub",      // Använd "sub" som användarnamn
         };
+
+        // options.Events = new JwtBearerEvents
+        // {
+        //     OnTokenValidated = context =>
+        //     {
+        //         Console.WriteLine($"🟢 TOKEN VALIDATED!");
+        //         Console.WriteLine($"User ID (sub): {context.Principal?.FindFirst("sub")?.Value}");
+        //         Console.WriteLine($"All claims:");
+        //         foreach (var claim in context.Principal?.Claims ?? [])
+        //         {
+        //             Console.WriteLine($"  {claim.Type}: {claim.Value}");
+        //         }
+        //         return Task.CompletedTask;
+        //     }
+        // };
     });
 
 builder.Services.AddAuthorization();
@@ -46,7 +70,20 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IYahooFinance, YahooFinance>();
 builder.Services.AddScoped<IFinanceService, FinanceService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 var app = builder.Build();
+
+app.UseCors("AllowReactApp");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -54,6 +91,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"DEBUG: Auth scheme: {context.Request.Headers["Authorization"]}");
+    await next();
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
