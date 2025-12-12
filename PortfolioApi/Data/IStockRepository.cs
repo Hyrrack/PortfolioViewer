@@ -5,6 +5,6 @@ namespace PortfolioApi.Data;
 public interface IStockRepository
 {
     Task AddStockAsync(Stock newStock);
-    Task RemoveStockAsync(int stockId, int userId);
-    Task<List<Stock>> GetUserStocksAsync(int userId);
+    Task RemoveStockAsync(int stockId, string userId);
+    Task<List<Stock>> GetUserStocksAsync(string userId);
 }

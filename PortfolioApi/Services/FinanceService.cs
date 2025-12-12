@@ -9,15 +9,15 @@ public class FinanceService(IYahooFinance yahooService, IStockRepository stockRe
     private readonly IYahooFinance _yahooService = yahooService;
     private readonly IStockRepository _stockRepository = stockRepository;
 
-    public async Task<YahooListStock> GetFromYahoo(string symbol)
+    public async Task<YahooStockDetails> GetFromYahoo(string symbol)
     {
-        YahooListStock yahooData = await _yahooService.GetStockData(symbol);
+        YahooStockDetails yahooData = await _yahooService.GetStockDetails(symbol);
         return yahooData;
     }
 
-    public async Task<YahooListStock> AddStock(string symbol, string userId)
+    public async Task<Stock> AddStock(string symbol, string userId)
     {
-        YahooListStock yahooData = await _yahooService.GetStockData(symbol);
+        YahooStockDetails yahooData = await _yahooService.GetStockDetails(symbol);
         Stock newStock = new Stock
         {
             Symbol = yahooData.Symbol,
@@ -26,6 +26,6 @@ public class FinanceService(IYahooFinance yahooService, IStockRepository stockRe
         };
 
         await _stockRepository.AddStockAsync(newStock);
-        return yahooData;
+        return newStock;
     }
 }

@@ -9,7 +9,7 @@ public class YahooFinance(IHttpClientFactory httpClientFactory) : IYahooFinance
 {
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
 
-    public async Task<YahooListStock> GetStockData(string symbol)
+    public async Task<YahooStockDetails> GetStockDetails(string symbol)
     {
         var client = _httpClientFactory.CreateClient();
 
@@ -30,7 +30,7 @@ public class YahooFinance(IHttpClientFactory httpClientFactory) : IYahooFinance
             throw new InvalidOperationException("Invalid response from Yahoo Finance");
         }
 
-        return new YahooListStock
+        return new YahooStockDetails
         {
             Symbol = responseData.Chart.Result[0].Meta.Symbol,
             Name = responseData.Chart.Result[0].Meta.LongName
