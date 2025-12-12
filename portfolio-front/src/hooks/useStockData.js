@@ -14,11 +14,6 @@ export const useStockData = (symbol, range = 30) => {
             const token = await getToken();
             const response = await fetch(
                 `${BASE_URL}/Stocks/${symbol}?range=${range}`,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                }
             );
 
             if (!response.ok) throw new Error('Failed to fetch stock data');

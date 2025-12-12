@@ -1,42 +1,50 @@
 import { useState } from 'react';
-import { StockSidebar } from './components/stock-sidebar';
+import { StockSidebar } from './components/stockSidebar';
+import { useUserStocks } from './hooks/useUserStocks';
+import { useStockData } from './hooks/useStockData';
+import { StockChart } from './components/stockChart';
+import { UserButton } from '@clerk/clerk-react';
+import { Box, Toolbar, AppBar, Typography } from '@mui/material';
 
 export default function DashboardPage() {
-    const [stocks, setStocks] = useState(['AAPL', 'GOOGL', 'MSFT']);
-    const [activeStock, setActiveStock] = useState('AAPL');
+    const { data: stocks, isLoading, error } = useUserStocks();
+    const [activeStock, setActiveStock] = useState(null);
+    const { data: stockData } = useStockData(activeStock?.symbol);
 
     const handleAddStock = (newStock) => {
-        setStocks([...stocks, newStock]);
         setActiveStock(newStock);
     };
 
-    const handleRemoveStock = (stockToRemove) => {
-        const updatedStocks = stocks.filter(stock => stock !== stockToRemove);
-        setStocks(updatedStocks);
+    if (isLoading) return <div>Loading stocks...</div>;
 
-        if (activeStock === stockToRemove && updatedStocks.length > 0) {
-            setActiveStock(updatedStocks[0]);
-        } else if (updatedStocks.length === 0) {
-            setActiveStock('');
-        }
-    };
+    if (error) return <div>Error loading stocks: {error.message}</div>;
 
     return (
-        <div className="flex h-screen">
+        <Box sx={{ display: 'flex' }}>
             <StockSidebar
-                stocks={stocks}
+                stocks={stocks || []}
                 activeStock={activeStock}
                 onSelectStock={setActiveStock}
                 onAddStock={handleAddStock}
-                onRemoveStock={handleRemoveStock}
+            // onRemoveStock={handleRemoveStock}
             />
 
-            <main className="flex-1 p-6 bg-gray-50">
-                <h1 className="text-2xl font-bold mb-6">
-                    {activeStock ? `Stock: ${activeStock}` : 'Select a stock'}
-                </h1>
-                {/* Ditt huvudinnehåll här */}
-            </main>
-        </div>
+            <Box sx={{ flexGrow: 1 }}>
+                <AppBar position="static" sx={{ bgcolor: 'transparent', boxShadow: 'none' }}>
+                    <Toolbar sx={{ justifyContent: 'flex-end' }}>
+                        <UserButton />
+                    </Toolbar>
+                </AppBar>
+                <Box sx={{ p: 3, mt: -8 }}>
+                    {activeStock ? (
+                        // Visa graf för vald aktie
+                        <StockChart stockData={stockData} />
+                    ) : (
+                        // Visa instruktioner om ingen aktie vald
+                        <Typography>Select a stock from the left to view data</Typography>
+                    )}
+                </Box>
+            </Box>
+        </Box >
     );
 }
