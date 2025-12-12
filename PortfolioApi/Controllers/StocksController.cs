@@ -39,7 +39,7 @@ public class StocksController(IFinanceService financeService, IStockRepository s
 
     [HttpPost]
     [Authorize]
-    public async Task<ActionResult<Stock>> AddStock(string symbol)
+    public async Task<ActionResult<Stock>> AddStock([FromBody] AddStockDto addStock)
     {
         var clerkUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -48,7 +48,7 @@ public class StocksController(IFinanceService financeService, IStockRepository s
             return Unauthorized();
         }
 
-        var stock = await _financeService.AddStock(symbol, clerkUserId);
+        var stock = await _financeService.AddStock(addStock.Symbol, clerkUserId);
 
         return Ok(stock);
 
