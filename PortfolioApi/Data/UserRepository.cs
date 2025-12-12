@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using PortfolioApi.Data;
 using PortfolioApi.DTOs;
@@ -30,8 +31,10 @@ public class UserRepository(UserStockContext context) : IUserRepository
         };
     }
 
-    public async Task<User> GetUserWithStocksAsync(int userId)
+    public async Task<User?> GetUserAsync(string userId)
     {
-        throw new NotImplementedException();
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null) return null;
+        return user;
     }
 }

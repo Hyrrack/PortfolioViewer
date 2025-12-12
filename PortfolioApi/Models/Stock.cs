@@ -9,6 +9,9 @@ public class Stock
     public string Symbol { get; set; } = string.Empty;
     [Required]
     public string CompanyName { get; set; } = string.Empty;
-    public int UserId { get; set; }
+
+    public string UserId { get; set; } = string.Empty;
+
+    public User User { get; set; } = default!;
 
 }

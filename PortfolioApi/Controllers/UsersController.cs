@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PortfolioApi.Data;
 using PortfolioApi.DTOs;
+using PortfolioApi.Models;
 using PortfolioApi.Services;
 using System.Security.Claims;
 
@@ -16,20 +17,14 @@ public class UsersController(IUserRepository userRepository) : ControllerBase
     [HttpPost]
     [Authorize]
     //Add response dto
-    public async Task<ActionResult> CreateUser()
+    public async Task<ActionResult<User>> CreateUser()
     {
         var clerkId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var fullName = User.FindFirst("fullname")?.Value;
         var userName = User.FindFirst("username")?.Value;
 
-        System.Console.WriteLine($"DEBUG: clerkId={clerkId}");
-        System.Console.WriteLine($"DEBUG: fullName={fullName}");
-        System.Console.WriteLine($"DEBUG: userName={userName}");
-        System.Console.WriteLine($"DEBUG: All claims:");
-
         var effectiveName = fullName ?? userName ?? "User";
 
-        // Denna if-sats gör INGET - ta bort den!
         if (clerkId == null || effectiveName == null)
         {
             return Unauthorized("User ID or Name claim not found.");
@@ -37,22 +32,21 @@ public class UsersController(IUserRepository userRepository) : ControllerBase
 
         CreateUserDto response = await _userRepository.GetOrCreateUserAsync(effectiveName, clerkId);
 
-        // Det här är onödigt - båda returnerar Ok()
-        if (response.Created) return Ok();
-        else return Ok();
+        if (response.Created)
+        {
+            return CreatedAtAction(nameof(GetUserById), new { id = response.User.Id }, response.User);
+        }
+        else return Ok(response.User);
     }
 
-    [HttpGet]
+    [HttpGet("{id}")]
     [Authorize]
-    public IActionResult SimpleTest()
+    public async Task<ActionResult<User>> GetUserById(string id)
     {
-        Console.WriteLine("✅ SIMPLE TEST - WE MADE IT INTO THE METHOD!");
+        var user = await _userRepository.GetUserAsync(id);
 
-        return Ok(new
-        {
-            Message = "Authorized!",
-            UserId = User.FindFirst("sub")?.Value,
-            Name = User.FindFirst("fullname")?.Value
-        });
+        if (user == null) return NotFound();
+
+        return Ok(user);
     }
 }
