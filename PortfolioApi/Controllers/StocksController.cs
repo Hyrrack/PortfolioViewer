@@ -16,9 +16,9 @@ public class StocksController(IFinanceService financeService, IStockRepository s
     private readonly IStockRepository _stockRepository = stockRepository;
 
     [HttpGet("{symbol}")]
-    public async Task<ActionResult<YahooStockDetails>> GetStockDetails(string symbol)
+    public async Task<ActionResult<StockData>> GetStockDetails(string symbol, int range)
     {
-        var stock = await _financeService.GetFromYahoo(symbol);
+        var stock = await _financeService.GetDataFromYahoo(symbol, range);
         return stock;
     }
 
@@ -51,6 +51,5 @@ public class StocksController(IFinanceService financeService, IStockRepository s
         var stock = await _financeService.AddStock(addStock.Symbol, clerkUserId);
 
         return Ok(stock);
-
     }
 }

@@ -36,4 +36,29 @@ public class YahooFinance(IHttpClientFactory httpClientFactory) : IYahooFinance
             Name = responseData.Chart.Result[0].Meta.LongName
         };
     }
+
+    public async Task<StockData> GetStockData(string symbol, int range)
+    {
+        var client = _httpClientFactory.CreateClient();
+
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            $"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range={range}d&interval=1d");
+
+        request.Headers.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36");
+        request.Headers.Add("Accept", "application/json");
+
+        var response = await client.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+
+        var responseData = await response.Content.ReadFromJsonAsync<YahooResponse>();
+        var stockData = StockData.FromYahooResponse(responseData);
+
+        if (responseData?.Chart?.Result?[0]?.Meta == null)
+        {
+            throw new InvalidOperationException("Invalid response from Yahoo Finance");
+        }
+
+        return stockData;
+    }
 }

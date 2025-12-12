@@ -9,10 +9,16 @@ public class FinanceService(IYahooFinance yahooService, IStockRepository stockRe
     private readonly IYahooFinance _yahooService = yahooService;
     private readonly IStockRepository _stockRepository = stockRepository;
 
-    public async Task<YahooStockDetails> GetFromYahoo(string symbol)
+    public async Task<YahooStockDetails> GetDetailsFromYahoo(string symbol)
     {
         YahooStockDetails yahooData = await _yahooService.GetStockDetails(symbol);
         return yahooData;
+    }
+
+    public async Task<StockData> GetDataFromYahoo(string symbol, int range)
+    {
+        var data = await _yahooService.GetStockData(symbol, range);
+        return data;
     }
 
     public async Task<Stock> AddStock(string symbol, string userId)
