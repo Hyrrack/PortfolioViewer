@@ -9,7 +9,7 @@ import { Box, Toolbar, AppBar, Typography } from '@mui/material';
 export default function DashboardPage() {
     const { data: stocks, isLoading, error } = useUserStocks();
     const [activeStock, setActiveStock] = useState(null);
-    const { data: stockData } = useStockData(activeStock?.symbol);
+    const { data: stockData, isLoading: loadingStocks } = useStockData(activeStock?.symbol);
 
     const handleAddStock = (newStock) => {
         setActiveStock(newStock);
@@ -35,16 +35,24 @@ export default function DashboardPage() {
                         <UserButton />
                     </Toolbar>
                 </AppBar>
-                <Box sx={{ p: 3, mt: -8 }}>
-                    {activeStock ? (
-                        // Visa graf för vald aktie
-                        <StockChart stockData={stockData} />
-                    ) : (
-                        // Visa instruktioner om ingen aktie vald
-                        <Typography>Select a stock from the left to view data</Typography>
-                    )}
-                </Box>
+
+                {loadingStocks ? (
+                    <div>Loading stock data...</div>
+                ) : (
+
+                    <Box sx={{ p: 3, mt: -8 }}>
+                        {activeStock ? (
+                            // Visa graf för vald aktie
+                            <StockChart stockData={stockData} />
+                        ) : (
+                            // Visa instruktioner om ingen aktie vald
+                            <Typography>Select a stock from the left to view data</Typography>
+                        )}
+                    </Box>
+                )}
             </Box>
+
+
         </Box >
     );
 }
