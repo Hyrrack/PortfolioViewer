@@ -11,23 +11,23 @@ public class UserRepository(UserStockContext context) : IUserRepository
     private readonly UserStockContext _context = context;
     public async Task<CreateUserDto> GetOrCreateUserAsync(string name, string id)
     {
-        var userExist = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
-        if (userExist != null) return new CreateUserDto
+        var user = await _context.Users.FindAsync(id);
+        if (user == null)
         {
-            Created = false,
-            User = userExist
-        };
-        var newUser = new User
-        {
-            Id = id,
-            Name = name,
-        };
-        _context.Users.Add(newUser);
-        await _context.SaveChangesAsync();
+            user = new User { Id = id, Name = name };
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+            return new CreateUserDto
+            {
+                Created = true,
+                User = user
+            };
+        }
+
         return new CreateUserDto
         {
             Created = true,
-            User = newUser
+            User = user
         };
     }
 

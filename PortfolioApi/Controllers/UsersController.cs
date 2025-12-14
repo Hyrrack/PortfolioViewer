@@ -17,7 +17,7 @@ public class UsersController(IUserRepository userRepository) : ControllerBase
     [HttpPost]
     [Authorize]
     //Add response dto
-    public async Task<ActionResult<User>> CreateUser()
+    public async Task<ActionResult<User>> GetOrCreateUser()
     {
         var clerkId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var fullName = User.FindFirst("fullname")?.Value;
@@ -25,9 +25,9 @@ public class UsersController(IUserRepository userRepository) : ControllerBase
 
         var effectiveName = fullName ?? userName ?? "User";
 
-        if (clerkId == null || effectiveName == null)
+        if (clerkId == null)
         {
-            return Unauthorized("User ID or Name claim not found.");
+            return Unauthorized("User ID claim not found.");
         }
 
         CreateUserDto response = await _userRepository.GetOrCreateUserAsync(effectiveName, clerkId);
