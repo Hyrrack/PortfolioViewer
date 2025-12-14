@@ -4,12 +4,14 @@ import { useUserStocks } from './hooks/useUserStocks';
 import { useStockData } from './hooks/useStockData';
 import { StockChart } from './components/stockChart';
 import { UserButton } from '@clerk/clerk-react';
-import { Box, Toolbar, AppBar, Typography } from '@mui/material';
+import { Box, Toolbar, AppBar, Typography, Button } from '@mui/material';
 
 export default function DashboardPage() {
     const { data: stocks, isLoading, error } = useUserStocks();
     const [activeStock, setActiveStock] = useState(null);
-    const { data: stockData, isLoading: loadingStocks } = useStockData(activeStock?.symbol);
+    const [range, setRange] = useState(30);
+    const { data: stockData, isLoading: loadingStocks } = useStockData(activeStock?.symbol, range);
+
 
     const handleAddStock = (newStock) => {
         setActiveStock(newStock);
@@ -42,8 +44,21 @@ export default function DashboardPage() {
 
                     <Box sx={{ p: 3, mt: -8 }}>
                         {activeStock ? (
-                            // Visa graf för vald aktie
-                            <StockChart stockData={stockData} />
+                            <>
+                                <StockChart stockData={stockData} />
+                                <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center', gap: 1 }}>
+                                    {[7, 30, 90, 180].map(days => (
+                                        <Button
+                                            key={days}
+                                            variant={range === days ? 'contained' : 'outlined'}
+                                            onClick={() => setRange(days)}
+                                            size="small"
+                                        >
+                                            {days}d
+                                        </Button>
+                                    ))}
+                                </Box>
+                            </>
                         ) : (
                             // Visa instruktioner om ingen aktie vald
                             <Typography>Select a stock from the left to view data</Typography>

@@ -15,7 +15,7 @@ public class UserRepository(UserStockContext context) : IUserRepository
         if (user == null)
         {
             user = new User { Id = id, Name = name };
-            await _context.Users.AddAsync(user);
+            _context.Users.Add(user);
             await _context.SaveChangesAsync();
             return new CreateUserDto
             {
