@@ -14,6 +14,7 @@ import {
     ListItemText,
 } from '@mui/material';
 import { AddStockButton } from "./addStockButton"
+import DeleteStockButton from "./deleteStockButton";
 
 const drawerWidth = 240;
 
@@ -44,6 +45,11 @@ export function StockSidebar({ stocks, activeStock, onSelectStock }) {
                         key={s.id}
                         disablePadding
                         selected={activeStock?.id === s.id}
+                        secondaryAction={
+                            <DeleteStockButton
+                                stockSymbol={s.symbol}
+                            />
+                        }
                     >
                         <ListItemButton onClick={() => onSelectStock(s)}>
                             <ListItemText primary={s.companyName} secondary={s.symbol} />
