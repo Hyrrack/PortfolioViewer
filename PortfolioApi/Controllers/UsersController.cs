@@ -16,7 +16,6 @@ public class UsersController(IUserRepository userRepository) : ControllerBase
 
     [HttpPost]
     [Authorize]
-    //Add response dto
     public async Task<ActionResult<User>> GetOrCreateUser()
     {
         var clerkId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

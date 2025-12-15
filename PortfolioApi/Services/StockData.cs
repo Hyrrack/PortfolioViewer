@@ -1,5 +1,7 @@
 using PortfolioApi.Models;
 
+namespace PortfolioApi.Services;
+
 public class StockData
 {
     public string Symbol { get; set; }
