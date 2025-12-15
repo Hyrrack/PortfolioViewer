@@ -21,10 +21,6 @@ const drawerWidth = 240;
 export function StockSidebar({ stocks, activeStock, onSelectStock }) {
 
     return (<>
-        <AppBar
-            position="fixed"
-            sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}
-        ></AppBar>
         <Drawer
             sx={{
                 width: drawerWidth,
@@ -37,7 +33,13 @@ export function StockSidebar({ stocks, activeStock, onSelectStock }) {
             variant="permanent"
             anchor="left"
         >
-            <Toolbar />
+            <Toolbar>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, paddingLeft: 2 }}>
+                    <Typography variant="h5" fontWeight="bold" color="primary">
+                        📈 Stockfolio
+                    </Typography>
+                </Box>
+            </Toolbar>
             <Divider />
             <List>
                 {stocks.map(s => (

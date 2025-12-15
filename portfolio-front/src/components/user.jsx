@@ -1,18 +1,26 @@
 import React, { useEffect } from 'react';
 import DashboardPage from '../dashboard';
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth } from '@clerk/clerk-react';
 import { useMutation } from '@tanstack/react-query';
 
 const BASE_API_URL = import.meta.env.VITE_API_URL;
 const API_URL = `${BASE_API_URL}/Users`;
 
-function UserSync() {
-    const { getToken, isSignedIn } = useAuth();
+const getSyncStorageKey = (userId) => `userSyncStatus_${userId}`;
 
-    const { mutate: triggerSync, isLoading, isError, isSuccess, error } = useMutation({
+function UserSync() {
+    const { getToken, isLoaded, userId } = useAuth();
+
+    const {
+        mutate: triggerSync,
+        isLoading: isSyncing,
+        isError,
+        isSuccess,
+        error
+    } = useMutation({
         mutationFn: async () => {
             const token = await getToken();
-            if (!token) throw new Error("No token found");
+            if (!token) throw new Error('No token found');
 
             const response = await fetch(API_URL, {
                 method: 'POST',
@@ -25,27 +33,28 @@ function UserSync() {
             if (!response.ok) {
                 throw new Error(`Backend sync failed: ${response.status} ${response.statusText}`);
             }
-            return response.json();
-        },
-        onSuccess: (data) => {
-            console.log("User synced successfully!", data);
+
+            const data = await response.json();
+
+            if (userId) {
+                localStorage.setItem(getSyncStorageKey(userId), 'synced');
+            }
+
+            return data;
         },
         onError: (err) => {
-            console.error("Sync error:", err);
+            console.error('Sync error:', err);
         }
     });
 
-
     useEffect(() => {
-        if (isSignedIn) {
-            if (!isSuccess && !isLoading) {
-                triggerSync();
-            }
+        if (isLoaded && userId && localStorage.getItem(getSyncStorageKey(userId)) !== 'synced') {
+            console.log("Initiating user sync via local storage check...");
+            triggerSync();
         }
-    }, [isSignedIn, isSuccess, isLoading, triggerSync]);
+    }, [isLoaded, userId, triggerSync]);
 
-
-    if (isLoading) {
+    if (!isLoaded || isSyncing) {
         return <div>Adding user...</div>;
     }
 
@@ -53,11 +62,11 @@ function UserSync() {
         return <div>Error saving user: {error.message}</div>;
     }
 
-    if (isSuccess) {
+    if (isSuccess || (isLoaded && userId && localStorage.getItem(getSyncStorageKey(userId)) === 'synced')) {
         return <DashboardPage />;
     }
 
-    return <div>Waiting ...</div>;
+    return <div>Preparing dashboard...</div>;
 }
 
 export default UserSync;
