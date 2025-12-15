@@ -1,13 +1,20 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+# Use the official .NET SDK image to build the application
+FROM mcr.microsoft.com AS build
 WORKDIR /app
-COPY PortfolioApi/PortfolioApi.csproj .
-RUN dotnet restore
-COPY . .
-RUN dotnet publish PortfolioApi/ -c Release -o /publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0
+# Copy the project files and restore dependencies
+COPY *.csproj ./
+RUN dotnet restore
+
+# Copy the rest of the source code and build
+COPY . .
+RUN dotnet publish -c Release -o /app/publish
+
+# Use the official ASP.NET runtime image to run the application
+FROM mcr.microsoft.com AS final
 WORKDIR /app
-COPY --from=build /publish .
-ENV ASPNETCORE_URLS=http://+:8080
-EXPOSE 8080
-ENTRYPOINT ["dotnet", "PortfolioApi.dll"]
+COPY --from=build /app/publish .
+
+# Set the entry point to run your API
+ENTRYPOINT ["dotnet", "PortfolioApi.dll"] 
+# Make sure "PortfolioApi.dll" matches the actual output DLL name of your project
