@@ -1,13 +1,15 @@
 import { Box, Typography } from '@mui/material';
 import {
     LineChart,
+    AreaChart,
+    Area,
     Line,
     XAxis,
     YAxis,
     CartesianGrid,
     Tooltip,
     Legend,
-    ResponsiveContainer
+    ResponsiveContainer,
 } from 'recharts';
 
 export const StockChart = ({ stockData }) => {
@@ -53,7 +55,15 @@ export const StockChart = ({ stockData }) => {
 
             <Box sx={{ height: 400 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={chartData}>
+                    <AreaChart data={chartData}>
+                        <defs>
+                            <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                                {/* The top part of the gradient (0% offset) - more opaque color */}
+                                <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                                {/* The bottom part of the gradient (100% offset) - fading to transparency */}
+                                <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+                            </linearGradient>
+                        </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
 
                         <XAxis
@@ -77,16 +87,17 @@ export const StockChart = ({ stockData }) => {
 
                         <Legend />
 
-                        <Line
+                        <Area
                             type="monotone"
                             dataKey="price"
                             stroke="#8884d8"
                             name="Closing Price"
                             dot={false}
                             activeDot={{ r: 4 }}
+                            fill="url(#colorPrice)"
                         />
 
-                    </LineChart>
+                    </AreaChart>
                 </ResponsiveContainer>
             </Box>
         </Box>
