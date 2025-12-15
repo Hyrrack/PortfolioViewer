@@ -42,6 +42,15 @@ export const StockChart = ({ stockData }) => {
                 {stockData?.name} ({stockData?.symbol})
             </Typography>
 
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, pb: 2 }}>
+                <Typography variant="h5" color={stockData.totalChangePercent >= 0 ? 'success.main' : 'error.main'}>
+                    {stockData.totalChangePercent >= 0 ? '+' : ''}{stockData.totalChangePercent?.toFixed(2)}%
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                    Past {stockData.dates?.length} days
+                </Typography>
+            </Box>
+
             <Box sx={{ height: 400 }}>
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={chartData}>
