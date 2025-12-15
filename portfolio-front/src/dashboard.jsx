@@ -12,7 +12,7 @@ export default function DashboardPage() {
     const [activeStock, setActiveStock] = useState(null);
     const [range, setRange] = useState(30);
     const [showSMA, setShowSMA] = useState(false);
-    const [smaPeriod, setSmaPeriod] = useState(20);
+    const [smaPeriod, setSmaPeriod] = useState(50);
 
     const { data: stockData, isLoading: loadingStocks } = useStockData(activeStock?.symbol, range);
     const { data: smaData } = useCalcSMA(activeStock?.symbol, range, smaPeriod, showSMA);
