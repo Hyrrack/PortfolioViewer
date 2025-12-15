@@ -7,7 +7,6 @@ public class StockData
     public List<DateTime> Dates { get; set; }
     public List<decimal> ClosingPrices { get; set; }
     public List<decimal> AdjustedClosingPrices { get; set; }
-
     public decimal TotalChange =>
         AdjustedClosingPrices.LastOrDefault() - AdjustedClosingPrices.FirstOrDefault();
 

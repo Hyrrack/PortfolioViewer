@@ -18,8 +18,19 @@ public class StocksController(IFinanceService financeService, IStockRepository s
     [HttpGet("{symbol}")]
     public async Task<ActionResult<StockData>> GetStockDetails(string symbol, int range)
     {
-        var stock = await _financeService.GetDataFromYahoo(symbol, range);
-        return stock;
+        try
+        {
+            var stock = await _financeService.GetDataFromYahoo(symbol, range);
+            return Ok(stock);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Ett internt serverfel inträffade.");
+        }
     }
 
     [HttpGet]
