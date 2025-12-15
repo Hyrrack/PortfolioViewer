@@ -8,6 +8,15 @@ public class StockData
     public List<decimal> ClosingPrices { get; set; }
     public List<decimal> AdjustedClosingPrices { get; set; }
 
+    public decimal TotalChange =>
+        AdjustedClosingPrices.LastOrDefault() - AdjustedClosingPrices.FirstOrDefault();
+
+    public decimal TotalChangePercent =>
+    AdjustedClosingPrices.FirstOrDefault() != 0
+        ? TotalChange / AdjustedClosingPrices.FirstOrDefault() * 100
+        : 0;
+
+
 
     public static StockData FromYahooResponse(YahooResponse response)
     {
