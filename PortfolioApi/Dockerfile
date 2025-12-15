@@ -16,5 +16,4 @@ WORKDIR /app
 COPY --from=build /app/publish .
 
 # Set the entry point to run your API
-ENTRYPOINT ["dotnet", "PortfolioApi.dll"] 
-# Make sure "PortfolioApi.dll" matches the actual output DLL name of your project
+ENTRYPOINT ["dotnet", "PortfolioApi.dll"]
