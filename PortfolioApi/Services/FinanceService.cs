@@ -21,6 +21,21 @@ public class FinanceService(IYahooFinance yahooService, IStockRepository stockRe
         return data;
     }
 
+    public async Task<MAResult> CalculateMovingAverage(string symbol, int range, int period)
+    {
+        int totalDays = range + period;
+        var stockData = await GetDataFromYahoo(symbol, totalDays);
+
+        var maPoints = CalculateMA(stockData.AdjustedClosingPrices, period);
+
+        return new MAResult
+        {
+            Dates = stockData.Dates.TakeLast(range).ToList(),
+            Prices = stockData.AdjustedClosingPrices.TakeLast(range).ToList(),
+            SMA = [.. maPoints.TakeLast(range)]
+        };
+    }
+
     public async Task<Stock> AddStock(string symbol, string userId)
     {
         var existingStock = await _stockRepository.GetUserStockAsync(symbol, userId);
@@ -42,5 +57,20 @@ public class FinanceService(IYahooFinance yahooService, IStockRepository stockRe
     {
         var deleted = await _stockRepository.RemoveStockAsync(symbol, userId);
         return deleted;
+    }
+
+    private static List<decimal> CalculateMA(List<decimal> prices, int period)
+    {
+        var ma = new List<decimal>();
+        for (int i = period - 1; i < prices.Count; i++)
+        {
+            decimal sum = 0;
+            for (int j = 0; j < period; j++)
+            {
+                sum += prices[i - j];
+            }
+            ma.Add(Math.Round(sum / period, 2));
+        }
+        return ma;
     }
 }

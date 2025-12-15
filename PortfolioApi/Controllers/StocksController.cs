@@ -33,6 +33,29 @@ public class StocksController(IFinanceService financeService, IStockRepository s
         }
     }
 
+    [HttpGet("{symbol}/sma")]
+    public async Task<ActionResult<MAResult>> GetSMA(
+        [FromRoute] string symbol,
+        [FromQuery] int range = 30,
+        [FromQuery] int period = 20)
+    {
+        try
+        {
+            var sma = await _financeService.CalculateMovingAverage(symbol, range, period);
+            if (sma == null)
+                return NotFound($"Could not calculate SMA for {symbol}");
+            return Ok(sma);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
     [HttpGet]
     [Authorize]
     public async Task<ActionResult<IEnumerable<Stock>>> GetUserStocks()

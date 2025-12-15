@@ -16,17 +16,15 @@ import {
 import { AddStockButton } from "./addStockButton"
 import DeleteStockButton from "./deleteStockButton";
 
-const drawerWidth = 240;
-
 export function StockSidebar({ stocks, activeStock, onSelectStock }) {
 
     return (<>
         <Drawer
             sx={{
-                width: drawerWidth,
+                width: { xs: 240, sm: 260, md: 280, lg: 300, xl: 320 },
                 flexShrink: 0,
                 '& .MuiDrawer-paper': {
-                    width: drawerWidth,
+                    width: { xs: 240, sm: 260, md: 280, lg: 300, xl: 320 },
                     boxSizing: 'border-box',
                 },
             }}
