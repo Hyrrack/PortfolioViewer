@@ -58,10 +58,20 @@ public class StocksController(IFinanceService financeService, IStockRepository s
         {
             return Unauthorized();
         }
+        try
+        {
+            var stock = await _financeService.AddStock(addStock.Symbol, clerkUserId);
 
-        var stock = await _financeService.AddStock(addStock.Symbol, clerkUserId);
-
-        return Ok(stock);
+            return Ok(stock);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "An internal error occurred while adding stock.");
+        }
     }
 
     [HttpDelete]
