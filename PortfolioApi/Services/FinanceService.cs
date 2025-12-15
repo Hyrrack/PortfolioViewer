@@ -32,7 +32,8 @@ public class FinanceService(IYahooFinance yahooService, IStockRepository stockRe
         {
             Dates = stockData.Dates.TakeLast(range).ToList(),
             Prices = stockData.AdjustedClosingPrices.TakeLast(range).ToList(),
-            SMA = [.. maPoints.TakeLast(range)]
+            SMA = [.. maPoints.TakeLast(range)],
+            Period = period
         };
     }
 

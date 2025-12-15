@@ -12,13 +12,14 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 
-export const StockChart = ({ stockData }) => {
+export const StockChart = ({ stockData, smaData }) => {
     if (!stockData) {
         return <div>No stock data found...</div>
     }
 
     const dates = stockData?.dates || [];
     const prices = stockData?.adjustedClosingPrices || [];
+    const sma = smaData?.sma || [];
 
     if (dates.length === 0) {
         return (
@@ -31,12 +32,16 @@ export const StockChart = ({ stockData }) => {
     const chartData = dates.map((dateStr, index) => ({
         date: new Date(dateStr),
         price: prices[index] || 0,
+        sma: sma[index] || null
     }));
 
     const priceValues = prices.filter(p => p != null);
-    const minPrice = Math.min(...priceValues);
-    const maxPrice = Math.max(...priceValues);
-    const padding = (maxPrice - minPrice) * 0.1
+    const smaValues = sma.filter(p => p != null);
+    const allValues = [...priceValues, ...smaValues];
+
+    const minPrice = Math.min(...allValues);
+    const maxPrice = Math.max(...allValues);
+    const padding = (maxPrice - minPrice) * 0.1;
 
     return (
         <Box>
@@ -58,9 +63,7 @@ export const StockChart = ({ stockData }) => {
                     <AreaChart data={chartData}>
                         <defs>
                             <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                                {/* The top part of the gradient (0% offset) - more opaque color */}
                                 <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-                                {/* The bottom part of the gradient (100% offset) - fading to transparency */}
                                 <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
                             </linearGradient>
                         </defs>
@@ -81,11 +84,20 @@ export const StockChart = ({ stockData }) => {
 
                         <Tooltip
                             labelFormatter={(date) => new Date(date).toLocaleDateString('sv-SE')}
-                            formatter={(value) => [`$${value.toFixed(2)}`, 'Price']}
+
+                            formatter={(value, name, props) => {
+                                let label = name;
+                                if (props.dataKey === 'price') {
+                                    label = 'Closing Price';
+                                } else if (props.dataKey === 'sma') {
+                                    label = `SMA (${smaData?.period})`;
+                                }
+                                return [`$${value.toFixed(2)}`, label];
+                            }}
                             contentStyle={{ borderRadius: 8 }}
                         />
 
-                        <Legend />
+                        {/* <Legend /> */}
 
                         <Area
                             type="monotone"
@@ -96,6 +108,18 @@ export const StockChart = ({ stockData }) => {
                             activeDot={{ r: 4 }}
                             fill="url(#colorPrice)"
                         />
+
+                        {smaData && (
+                            <Line
+                                type="monotone"
+                                dataKey="sma"
+                                stroke="#FFB300" // <-- This is the color change
+                                strokeWidth={2}
+                                strokeDasharray="5 3"
+                                name={`SMA (${smaData.period})`}
+                                dot={false}
+                            />
+                        )}
 
                     </AreaChart>
                 </ResponsiveContainer>
