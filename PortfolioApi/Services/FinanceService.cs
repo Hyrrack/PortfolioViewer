@@ -23,6 +23,9 @@ public class FinanceService(IYahooFinance yahooService, IStockRepository stockRe
 
     public async Task<Stock> AddStock(string symbol, string userId)
     {
+        var existingStock = await _stockRepository.GetUserStockAsync(symbol, userId);
+        if (existingStock != null) return existingStock;
+
         YahooStockDetails yahooData = await _yahooService.GetStockDetails(symbol);
         Stock newStock = new()
         {

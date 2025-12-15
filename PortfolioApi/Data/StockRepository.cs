@@ -19,6 +19,15 @@ public class StockRepository(UserStockContext context) : IStockRepository
             .ToListAsync();
     }
 
+    public async Task<Stock?> GetUserStockAsync(string symbol, string userId)
+    {
+        var stock = await _context.Stocks.FirstOrDefaultAsync(s => s.UserId == userId && s.Symbol == symbol);
+
+        if (stock == null) return null;
+
+        return stock;
+    }
+
     public async Task<bool> RemoveStockAsync(string symbol, string userId)
     {
         var stock = await _context.Stocks.FirstOrDefaultAsync(s => s.UserId == userId && s.Symbol == symbol);
