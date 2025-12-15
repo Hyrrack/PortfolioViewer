@@ -29,7 +29,7 @@ public class StocksController(IFinanceService financeService, IStockRepository s
         }
         catch (Exception)
         {
-            return StatusCode(500, "Ett internt serverfel inträffade.");
+            return StatusCode(500, "Internal server error");
         }
     }
 

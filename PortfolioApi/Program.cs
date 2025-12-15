@@ -39,25 +39,8 @@ builder.Services
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-
-            // ⭐ LÄGG TILL DESSA TVÅ RADER ⭐
-            NameClaimType = "sub",      // Använd "sub" som användarnamn
+            NameClaimType = "sub",
         };
-
-        // options.Events = new JwtBearerEvents
-        // {
-        //     OnTokenValidated = context =>
-        //     {
-        //         Console.WriteLine($"🟢 TOKEN VALIDATED!");
-        //         Console.WriteLine($"User ID (sub): {context.Principal?.FindFirst("sub")?.Value}");
-        //         Console.WriteLine($"All claims:");
-        //         foreach (var claim in context.Principal?.Claims ?? [])
-        //         {
-        //             Console.WriteLine($"  {claim.Type}: {claim.Value}");
-        //         }
-        //         return Task.CompletedTask;
-        //     }
-        // };
     });
 
 builder.Services.AddAuthorization();
@@ -75,9 +58,12 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
+            policy.WithOrigins(
+                "http://localhost:5173",
+                "https://portfolio-viewer-wine.vercel.app"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
         });
 });
 
