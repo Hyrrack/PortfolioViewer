@@ -19,8 +19,12 @@ public class StockRepository(UserStockContext context) : IStockRepository
             .ToListAsync();
     }
 
-    public Task RemoveStockAsync(int stockId, string userId)
+    public async Task<bool> RemoveStockAsync(string symbol, string userId)
     {
-        throw new NotImplementedException();
+        var stock = await _context.Stocks.FirstOrDefaultAsync(s => s.UserId == userId && s.Symbol == symbol);
+        if (stock == null) return false;
+        _context.Stocks.Remove(stock);
+        await _context.SaveChangesAsync();
+        return true;
     }
 }

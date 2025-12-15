@@ -24,7 +24,7 @@ public class FinanceService(IYahooFinance yahooService, IStockRepository stockRe
     public async Task<Stock> AddStock(string symbol, string userId)
     {
         YahooStockDetails yahooData = await _yahooService.GetStockDetails(symbol);
-        Stock newStock = new Stock
+        Stock newStock = new()
         {
             Symbol = yahooData.Symbol,
             CompanyName = yahooData.Name,
@@ -33,5 +33,11 @@ public class FinanceService(IYahooFinance yahooService, IStockRepository stockRe
 
         await _stockRepository.AddStockAsync(newStock);
         return newStock;
+    }
+
+    public async Task<bool> DeleteStock(string symbol, string userId)
+    {
+        var deleted = await _stockRepository.RemoveStockAsync(symbol, userId);
+        return deleted;
     }
 }

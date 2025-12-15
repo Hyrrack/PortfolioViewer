@@ -39,7 +39,7 @@ public class StocksController(IFinanceService financeService, IStockRepository s
 
     [HttpPost]
     [Authorize]
-    public async Task<ActionResult<Stock>> AddStock([FromBody] AddStockDto addStock)
+    public async Task<ActionResult<Stock>> AddStock([FromBody] StockDto addStock)
     {
         var clerkUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -51,5 +51,19 @@ public class StocksController(IFinanceService financeService, IStockRepository s
         var stock = await _financeService.AddStock(addStock.Symbol, clerkUserId);
 
         return Ok(stock);
+    }
+
+    [HttpDelete]
+    [Authorize]
+    public async Task<IActionResult> DeleteStock([FromBody] StockDto deleteStock)
+    {
+        var clerkUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (clerkUserId == null)
+        {
+            return Unauthorized();
+        }
+        var deleted = await _financeService.DeleteStock(deleteStock.Symbol, clerkUserId);
+        if (!deleted) return NotFound($"Stock with symbol {deleteStock.Symbol} was not found for this user.");
+        return NoContent();
     }
 }
