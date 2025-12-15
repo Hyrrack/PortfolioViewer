@@ -8,8 +8,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 var clerkIssuerUrl = builder.Configuration["Clerk:IssuerUrl"];
 
-Console.WriteLine($"DEBUG: Loaded Issuer URL: {clerkIssuerUrl}");
-
 if (string.IsNullOrEmpty(clerkIssuerUrl))
 {
     throw new InvalidOperationException("Clerk:IssuerUrl configuration value is missing.");
@@ -77,12 +75,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.Use(async (context, next) =>
-{
-    Console.WriteLine($"DEBUG: Auth scheme: {context.Request.Headers["Authorization"]}");
-    await next();
-});
 
 app.UseAuthentication();
 app.UseAuthorization();
