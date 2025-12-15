@@ -27,8 +27,7 @@ createRoot(document.getElementById('root')).render(
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <App />
-        </ThemeProvider>s
-
+        </ThemeProvider>
       </QueryClientProvider>
     </ClerkProvider>
   </StrictMode>,

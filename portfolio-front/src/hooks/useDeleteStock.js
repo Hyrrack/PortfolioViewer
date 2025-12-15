@@ -24,10 +24,10 @@ export const useDeleteStock = () => {
                 throw new Error(error || 'Failed to remove stock');
             }
 
-            return response.json();
+            return null
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['userStocks'] });
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['userStocks'] });
         },
         onError: (error) => {
             console.error('Failed to remove stock:', error);
